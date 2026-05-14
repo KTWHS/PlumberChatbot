@@ -42,10 +42,15 @@ app.post('/webhook', async (req, res) => {
   const response = await getAIResponse(incomingMsg);
   
   try {
+    // Fix: ensure 'to' number has + prefix
+    let toNumber = from.replace('whatsapp:', '');
+    if (!toNumber.startsWith('+')) {
+      toNumber = '+' + toNumber;
+    }
     await twilioClient.messages.create({
       body: response,
       from: fromNumber,
-      to: from
+      to: 'whatsapp:' + toNumber
     });
   } catch (error) {
     console.error("Twilio Error:", error);
